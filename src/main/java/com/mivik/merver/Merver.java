@@ -37,7 +37,7 @@ public abstract class Merver implements Closeable {
 		}
 		try {
 			socket = new ServerSocket(port);
-			MLog.v("Created server at " + port);
+			if (config.verbose) MLog.v("Created server at " + port);
 			while (running) {
 				Socket con = null;
 				try {

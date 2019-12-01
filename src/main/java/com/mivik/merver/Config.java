@@ -13,7 +13,7 @@ public class Config {
 	}
 
 	public Config setVerbose(boolean verbose) {
-		this.verbose=verbose;
+		this.verbose = verbose;
 		return this;
 	}
 
