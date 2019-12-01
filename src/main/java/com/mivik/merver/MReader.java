@@ -2,7 +2,7 @@ package com.mivik.merver;
 
 import java.io.*;
 
-public class MReader implements Closeable {
+public class MReader extends Reader implements Closeable {
 	private Reader reader;
 	private boolean eof = false;
 
@@ -16,6 +16,14 @@ public class MReader implements Closeable {
 
 	public int read() throws IOException {
 		return reader.read();
+	}
+
+	public int read(char[] buffer) throws IOException {
+		return reader.read(buffer);
+	}
+
+	public int read(char[] buffer, int off, int len) throws IOException {
+		return reader.read(buffer, off, len);
 	}
 
 	public String readTil(char... tokens) throws IOException {

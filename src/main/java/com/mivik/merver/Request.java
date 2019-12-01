@@ -24,7 +24,7 @@ public class Request implements Constant {
 
 	public void loadFrom(InputStream input, Config config) throws IOException, BadRequestException {
 		reset();
-		MReader reader = new MReader(input);
+		MReader reader = new RMReader(input);
 		if ((method = reader.readTil(SPACE)) == null) throw new BadRequestException("Incomplete method");
 		if ((path = reader.readTil(SPACE)) == null) throw new BadRequestException("Incomplete path");
 		if ((version = reader.readSinglyTil(ENDL)) == null) throw new BadRequestException("Incomplete http version");
@@ -50,9 +50,9 @@ public class Request implements Constant {
 			}
 		} else len = config.maxContentLength;
 		data = new byte[len];
-		if (input.read(data) != len)
-			throw new BadRequestException("Content-Length described in header does not match the real one");
-		reader.close();
+		int read = input.read(data);
+		if (read != len)
+			throw new BadRequestException("Content-Length described in header does not match the real one: Expected " + len + ", got " + read);
 	}
 
 	public void reset() {
