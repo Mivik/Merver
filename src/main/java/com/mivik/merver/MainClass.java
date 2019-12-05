@@ -7,13 +7,14 @@ public class MainClass {
 		File file = null;
 		int port = 1926;
 		for (int i = 0; i < args.length; i++) {
-			if (args.equals("--port") || args.equals("-p")) {
+			String arg = args[i];
+			if (arg.equals("--port") || arg.equals("-p")) {
 				if (i == args.length - 1) throw new IllegalArgumentException(args[i]);
 				port = Integer.parseInt(args[++i]);
 			} else {
-				file = new File(args[0]);
+				file = new File(arg);
 				if (!file.exists()) {
-					System.err.println("File \"" + args[0] + "\" does not exist");
+					System.err.println("File \"" + arg + "\" does not exist");
 					System.exit(1);
 					return;
 				}
