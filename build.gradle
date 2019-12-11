@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.mivik'
-version '1.1.4'
+version '1.1.4.1'
 
 sourceCompatibility = 1.8
 
