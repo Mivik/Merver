@@ -50,7 +50,7 @@ public class Request implements Constant {
 			}
 		} else len = config.maxContentLength;
 		data = new byte[len];
-		int read = input.read(data);
+		int read = input.read(data, 0, len);
 		if (read != len)
 			throw new BadRequestException("Content-Length described in header does not match the real one: Expected " + len + ", got " + read);
 	}

@@ -3,6 +3,7 @@ package com.mivik.merver;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.stream.Stream;
 
 public abstract class Merver implements Closeable {
 	private ServerSocket socket;
@@ -42,11 +43,22 @@ public abstract class Merver implements Closeable {
 				Socket con = null;
 				try {
 					con = socket.accept();
-					InputStream in = new BufferedInputStream(con.getInputStream());
-					OutputStream out = new BufferedOutputStream(con.getOutputStream());
-					Response res = new Response();
-					process(new Request(in, config), res);
-					res.writeTo(out);
+//					InputStream in = new BufferedInputStream(con.getInputStream());
+//					OutputStream out = new BufferedOutputStream(con.getOutputStream());
+					InputStream in = con.getInputStream();
+					OutputStream out = con.getOutputStream();
+					if (true) {
+						Response res = new Response();
+						process(new Request(in, config), res);
+						res.writeTo(out);
+					} else {
+						ByteArrayOutputStream qwe = new ByteArrayOutputStream();
+						byte[] buf = new byte[1024];
+						int red;
+						while ((red = in.read(buf)) != -1) qwe.write(buf, 0, red);
+						System.out.println("===============\n" + qwe.toString() + "\n===============");
+					}
+
 					in.close();
 					out.close();
 					con.close();
