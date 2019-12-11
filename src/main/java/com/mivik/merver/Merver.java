@@ -75,7 +75,7 @@ public abstract class Merver<T extends Config> implements Closeable {
 		}
 	}
 
-	public abstract void process(InputStream in, OutputStream out);
+	public abstract void process(InputStream in, OutputStream out) throws IOException;
 
 	protected abstract T createConfig();
 
