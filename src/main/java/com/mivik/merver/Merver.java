@@ -36,7 +36,8 @@ public abstract class Merver<T extends Config> implements Closeable {
 			socket = new ServerSocket(port);
 			if (config.verbose) MLog.v("Created server at " + port);
 			while (running) {
-				try (final Socket con = socket.accept()) {
+				try {
+					final Socket con = socket.accept();
 					new Thread() {
 						@Override
 						public void run() {
@@ -52,6 +53,12 @@ public abstract class Merver<T extends Config> implements Closeable {
 								out.close();
 							} catch (Throwable t) {
 								MLog.e("Failed to process", t);
+							} finally {
+								try {
+									if (con != null) con.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 							}
 						}
 					}.start();
