@@ -23,7 +23,7 @@ public abstract class Merver<T extends Config> implements Closeable {
 		return running;
 	}
 
-	public Config getConfig() {
+	public T getConfig() {
 		return config;
 	}
 
