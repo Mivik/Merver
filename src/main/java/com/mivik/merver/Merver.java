@@ -49,8 +49,11 @@ public abstract class Merver<T extends Config> implements Closeable {
 									out = new BufferedOutputStream(out);
 								}
 								process(in, out);
-								in.close();
-								out.close();
+								try {
+									in.close();
+									out.close();
+								} catch (IOException e) {
+								}
 							} catch (Throwable t) {
 								MLog.e("Failed to process", t);
 							} finally {
