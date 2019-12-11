@@ -1,4 +1,4 @@
-package com.mivik.merver;
+package com.mivik.merver.http;
 
 interface Constant {
 	String ENDL = "\r\n";

@@ -1,5 +1,8 @@
 package com.mivik.merver;
 
+import com.mivik.merver.http.FileHttpMerver;
+import com.mivik.merver.http.RawHttpMerver;
+
 import java.io.File;
 
 public class MainClass {
@@ -29,14 +32,14 @@ public class MainClass {
 				File file = new File(arg);
 				if (!file.exists()) reportErr("File \"" + arg + "\" does not exist");
 				if (!file.isDirectory()) reportErr("Expected a directory");
-				merver = new FileMerver(file);
+				merver = new FileHttpMerver(file);
 			} else if (arg.equals("--simple") || arg.equals("-s")) {
 				checkNull();
-				merver = new SimpleMerver();
+				merver = new RawHttpMerver();
 			} else reportErr("Unrecognized option: " + arg);
 		}
 		if (merver == null) reportErr("Merver not specified");
-		merver.getConfig().setVerbose(true);
+		merver.getConfig().verbose = true;
 		merver.listen(port);
 	}
 }

@@ -2,36 +2,35 @@ package com.mivik.merver;
 
 import java.io.*;
 
-public class MReader extends Reader implements Closeable {
-	private Reader reader;
+public class MReader extends InputStream implements Closeable {
+	private InputStream in;
 	private boolean eof = false;
 
 	public MReader(InputStream in) {
-		this(new InputStreamReader(in));
+		this.in = in;
 	}
 
-	public MReader(Reader reader) {
-		this.reader = reader;
-	}
-
+	@Override
 	public int read() throws IOException {
-		return reader.read();
+		return in.read();
 	}
 
-	public int read(char[] buffer) throws IOException {
-		return reader.read(buffer);
+	@Override
+	public int read(byte[] buffer) throws IOException {
+		return in.read(buffer);
 	}
 
-	public int read(char[] buffer, int off, int len) throws IOException {
-		return reader.read(buffer, off, len);
+	@Override
+	public int read(byte[] buffer, int off, int len) throws IOException {
+		return in.read(buffer, off, len);
 	}
 
 	public String readTil(char... tokens) throws IOException {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int c;
 		w:
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				if (ret.length() == 0) return null;
@@ -45,12 +44,12 @@ public class MReader extends Reader implements Closeable {
 	}
 
 	public String readTil(String pattern) throws IOException {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int c;
 		int i = -1;
 		int[] nxt = getKMPNext(pattern, null);
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				if (ret.length() == 0) return null;
@@ -70,11 +69,11 @@ public class MReader extends Reader implements Closeable {
 	}
 
 	public String readSinglyTil(String pattern) throws IOException {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int c;
 		int i = 0;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				if (ret.length() == 0) return null;
@@ -100,8 +99,8 @@ public class MReader extends Reader implements Closeable {
 		return readTil(' ', '\t', '\r', '\n');
 	}
 
-	public Reader getReader() {
-		return reader;
+	public InputStream getInputStream() {
+		return in;
 	}
 
 	public static int[] getKMPNext(String s, int[] nxt) {
@@ -122,7 +121,7 @@ public class MReader extends Reader implements Closeable {
 		byte ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -131,7 +130,7 @@ public class MReader extends Reader implements Closeable {
 			else if (c >= '0' && c <= '9') {
 				do {
 					ret = (byte) ((ret << 1) + (ret << 3) + (c - '0'));
-					c = reader.read();
+					c = in.read();
 				} while (c >= '0' && c <= '9');
 				return neg ? (byte) -ret : ret;
 			} else neg = false;
@@ -143,7 +142,7 @@ public class MReader extends Reader implements Closeable {
 		short ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -152,7 +151,7 @@ public class MReader extends Reader implements Closeable {
 			else if (c >= '0' && c <= '9') {
 				do {
 					ret = (short) ((ret << 1) + (ret << 3) + (c - '0'));
-					c = reader.read();
+					c = in.read();
 				} while (c >= '0' && c <= '9');
 				return neg ? (short) -ret : ret;
 			} else neg = false;
@@ -164,7 +163,7 @@ public class MReader extends Reader implements Closeable {
 		int ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -173,7 +172,7 @@ public class MReader extends Reader implements Closeable {
 			else if (c >= '0' && c <= '9') {
 				do {
 					ret = (ret << 1) + (ret << 3) + (c - '0');
-					c = reader.read();
+					c = in.read();
 				} while (c >= '0' && c <= '9');
 				return neg ? -ret : ret;
 			} else neg = false;
@@ -185,7 +184,7 @@ public class MReader extends Reader implements Closeable {
 		long ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -194,7 +193,7 @@ public class MReader extends Reader implements Closeable {
 			else if (c >= '0' && c <= '9') {
 				do {
 					ret = (ret << 1) + (ret << 3) + (c - '0');
-					c = reader.read();
+					c = in.read();
 				} while (c >= '0' && c <= '9');
 				return neg ? -ret : ret;
 			} else neg = false;
@@ -206,7 +205,7 @@ public class MReader extends Reader implements Closeable {
 		float ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -216,7 +215,7 @@ public class MReader extends Reader implements Closeable {
 				read:
 				while (true) {
 					ret = ret * 10 + (c - '0');
-					c = reader.read();
+					c = in.read();
 					if (c == -1) {
 						eof = true;
 						return ret;
@@ -224,7 +223,7 @@ public class MReader extends Reader implements Closeable {
 					if (c == '.') {
 						float p = 1;
 						while (true) {
-							c = reader.read();
+							c = in.read();
 							if (c == -1) {
 								eof = true;
 								break read;
@@ -244,7 +243,7 @@ public class MReader extends Reader implements Closeable {
 		float ret = 0;
 		boolean neg = false;
 		while (true) {
-			c = reader.read();
+			c = in.read();
 			if (c == -1) {
 				eof = true;
 				return ret;
@@ -254,7 +253,7 @@ public class MReader extends Reader implements Closeable {
 				read:
 				while (true) {
 					ret = ret * 10 + (c - '0');
-					c = reader.read();
+					c = in.read();
 					if (c == -1) {
 						eof = true;
 						return ret;
@@ -262,7 +261,7 @@ public class MReader extends Reader implements Closeable {
 					if (c == '.') {
 						float p = 1;
 						while (true) {
-							c = reader.read();
+							c = in.read();
 							if (c == -1) {
 								eof = true;
 								break read;
@@ -270,7 +269,7 @@ public class MReader extends Reader implements Closeable {
 							if (c < '0' || c > '9') break read;
 							ret += (p /= 10) * (c - '0');
 						}
-					} else if (c < '0' || c > '9') break read;
+					} else if (c < '0' || c > '9') break;
 				}
 				return neg ? -ret : ret;
 			} else neg = false;
@@ -283,6 +282,6 @@ public class MReader extends Reader implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		reader.close();
+		in.close();
 	}
 }

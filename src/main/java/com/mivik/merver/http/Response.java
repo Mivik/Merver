@@ -1,4 +1,4 @@
-package com.mivik.merver;
+package com.mivik.merver.http;
 
 import java.io.*;
 import java.nio.charset.Charset;

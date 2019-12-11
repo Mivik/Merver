@@ -1,4 +1,8 @@
-package com.mivik.merver;
+package com.mivik.merver.http;
+
+import com.mivik.merver.BadRequestException;
+import com.mivik.merver.MReader;
+import com.mivik.merver.config.HttpConfig;
 
 import java.io.*;
 import java.util.Collection;
@@ -17,14 +21,14 @@ public class Request implements Constant {
 		reset();
 	}
 
-	public Request(InputStream input, Config config) throws IOException, BadRequestException {
+	public Request(InputStream input, HttpConfig config) throws IOException, BadRequestException {
 		reset();
 		loadFrom(input, config);
 	}
 
-	public void loadFrom(InputStream input, Config config) throws IOException, BadRequestException {
+	public void loadFrom(InputStream input, HttpConfig config) throws IOException, BadRequestException {
 		reset();
-		MReader reader = new RMReader(input);
+		MReader reader = new MReader(input);
 		if ((method = reader.readTil(SPACE)) == null) throw new BadRequestException("Incomplete method");
 		if ((path = reader.readTil(SPACE)) == null) throw new BadRequestException("Incomplete path");
 		if ((version = reader.readSinglyTil(ENDL)) == null) throw new BadRequestException("Incomplete http version");

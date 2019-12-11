@@ -1,30 +1,26 @@
 package com.mivik.merver;
 
+import com.mivik.merver.config.Config;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.stream.Stream;
 
-public abstract class Merver implements Closeable {
+public abstract class Merver<T extends Config> implements Closeable {
 	private ServerSocket socket;
 	private boolean running;
-	protected Config config;
+	protected T config;
 
 	public Merver() {
-		config = new Config();
+		config = createConfig();
 	}
 
-	public Merver(Config config) {
+	public Merver(T config) {
 		this.config = config;
 	}
 
 	public boolean isRunning() {
 		return running;
-	}
-
-	public void setConfig(Config config) {
-		if (config == null) throw new IllegalArgumentException("Config cannot be null");
-		this.config = config;
 	}
 
 	public Config getConfig() {
@@ -40,32 +36,27 @@ public abstract class Merver implements Closeable {
 			socket = new ServerSocket(port);
 			if (config.verbose) MLog.v("Created server at " + port);
 			while (running) {
-				Socket con = null;
-				try {
-					con = socket.accept();
-//					InputStream in = new BufferedInputStream(con.getInputStream());
-//					OutputStream out = new BufferedOutputStream(con.getOutputStream());
-					InputStream in = con.getInputStream();
-					OutputStream out = con.getOutputStream();
-					if (true) {
-						Response res = new Response();
-						process(new Request(in, config), res);
-						res.writeTo(out);
-					} else {
-						ByteArrayOutputStream qwe = new ByteArrayOutputStream();
-						byte[] buf = new byte[1024];
-						int red;
-						while ((red = in.read(buf)) != -1) qwe.write(buf, 0, red);
-						System.out.println("===============\n" + qwe.toString() + "\n===============");
-					}
-
-					in.close();
-					out.close();
-					con.close();
+				try (final Socket con = socket.accept()) {
+					new Thread() {
+						@Override
+						public void run() {
+							try {
+								InputStream in = con.getInputStream();
+								OutputStream out = con.getOutputStream();
+								if (config.useBuffer) {
+									in = new BufferedInputStream(in);
+									out = new BufferedOutputStream(out);
+								}
+								process(in, out);
+								in.close();
+								out.close();
+							} catch (Throwable t) {
+								MLog.e("Failed to process", t);
+							}
+						}
+					}.start();
 				} catch (Throwable t) {
-					MLog.e("Failed to process request from client", t);
-				} finally {
-					if (con != null) con.close();
+					MLog.e("Failed to process", t);
 				}
 			}
 		} catch (IOException e) {
@@ -84,7 +75,9 @@ public abstract class Merver implements Closeable {
 		}
 	}
 
-	public abstract void process(Request req, Response res);
+	public abstract void process(InputStream in, OutputStream out);
+
+	protected abstract T createConfig();
 
 	@Override
 	public void close() throws IOException {

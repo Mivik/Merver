@@ -1,10 +1,12 @@
-package com.mivik.merver;
+package com.mivik.merver.http;
+
+import com.mivik.merver.MLog;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FileMerver extends Merver implements Constant {
+public class FileHttpMerver extends HttpMerver implements Constant {
 	private static Map<String, String> CONTENT_TYPE_MAP = null;
 
 	public static final String getContentType(String name) {
@@ -29,14 +31,14 @@ public class FileMerver extends Merver implements Constant {
 
 	private File root;
 
-	public FileMerver() {
+	public FileHttpMerver() {
 	}
 
-	public FileMerver(String path) {
+	public FileHttpMerver(String path) {
 		this(new File(path));
 	}
 
-	public FileMerver(File root) {
+	public FileHttpMerver(File root) {
 		setRootDirectory(root);
 	}
 
