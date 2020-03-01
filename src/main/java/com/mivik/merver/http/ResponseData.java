@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface ResponseData {
-    int getContentLength();
+	int getContentLength();
 
-    void write(OutputStream out) throws IOException;
+	void write(OutputStream out) throws IOException;
 }
