@@ -33,10 +33,16 @@ public class Response implements Constant {
 	private String version;
 	private int code;
 	private Map<String, String> header = new HashMap<>();
-	private byte[] data;
+	private ResponseData data;
 
 	public Response() {
 		reset();
+	}
+
+	public Response redirect(String location, boolean permanent) {
+		setHeader("Location", location);
+		setResponseCode(permanent ? 301 : 302);
+		return this;
 	}
 
 	public Response setVersion(String version) {
@@ -69,13 +75,21 @@ public class Response implements Constant {
 	}
 
 	public Response setData(byte[] data) {
-		this.data = data;
-		markContentLength();
-		return this;
+		return setData(new SimpleResponseData(data));
 	}
 
 	public Response setData(String data) {
 		return setData(data.getBytes());
+	}
+
+	public Response setData(byte[] data, int off, int len) {
+		return setData(new SimpleResponseData(data, off, len));
+	}
+
+	public Response setData(ResponseData data) {
+		this.data = data;
+		setHeader("Content-Length", Integer.toString(data == null ? 0 : data.getContentLength()));
+		return this;
 	}
 
 	public Response setContentType(String contentType) {
@@ -107,13 +121,21 @@ public class Response implements Constant {
 		return header.get("Date");
 	}
 
-	public Response markContentLength() {
-		header.put("Content-Length", Integer.toString(data.length));
+	public int getContentLength() {
+		return Integer.parseInt(header.get("Content-Length"));
+	}
+
+	public Response setHeader(String key, String data) {
+		header.put(key, data);
 		return this;
 	}
 
-	public int getContentLength() {
-		return Integer.parseInt(header.get("Content-Length"));
+	public String getHeader(String key) {
+		return header.get(key);
+	}
+
+	public boolean hasHeader(String key) {
+		return header.containsKey(key);
 	}
 
 	public void writeTo(OutputStream output) throws IOException {
@@ -133,7 +155,7 @@ public class Response implements Constant {
 		writer.write(ENDL);
 		if (data != null) {
 			writer.flush();
-			output.write(data);
+			data.write(output);
 			writer.write(ENDL);
 		}
 		writer.flush();

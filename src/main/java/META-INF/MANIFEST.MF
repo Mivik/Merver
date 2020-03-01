@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: com.mivik.merver.MainClass
-
+Main-Class: com.mivik.merver.TestClass

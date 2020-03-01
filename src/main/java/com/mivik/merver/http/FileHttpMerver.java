@@ -112,9 +112,7 @@ public class FileHttpMerver extends HttpMerver implements Constant {
 
 	@Override
 	public void process(Request req, Response res) {
-		String name = req.getPath();
-		int ind = name.lastIndexOf('?');
-		if (ind != -1) name = name.substring(0, ind);
+		String name = req.getParsedPath().getPath();
 		sendFile(new File(root, name), name, res);
 	}
 }

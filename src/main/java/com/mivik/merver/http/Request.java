@@ -16,6 +16,7 @@ public class Request implements Constant {
 	private String version;
 	private Map<String, String> header = new HashMap<>();
 	private byte[] data;
+	private URLPath parsedPath;
 
 	public Request() {
 		reset();
@@ -57,6 +58,11 @@ public class Request implements Constant {
 		int read = input.read(data, 0, len);
 		if (read != len)
 			throw new BadRequestException("Content-Length described in header does not match the real one: Expected " + len + ", got " + read);
+	}
+
+	public synchronized URLPath getParsedPath() {
+		if (parsedPath == null) parsedPath = URLPath.parse(path);
+		return parsedPath;
 	}
 
 	public void reset() {
